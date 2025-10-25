@@ -1,0 +1,48 @@
+{
+  "name": "react-google-ads-advanced",
+  "version": "1.0.0",
+  "description": "A React component for integrating Google Ads with capability to suppress ads which are unfilled or not loaded, enhancing user experience by avoiding empty ad spaces.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faraasat/react-google-ads-advanced.git"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && rm -rf dist/*.d.mts",
+    "release": "standard-version"
+  },
+  "keywords": [
+    "react",
+    "nextjs",
+    "next.js",
+    "adsense",
+    "google adsense",
+    "google ads",
+    "ads",
+    "react adsense",
+    "next adsense",
+    "advanced ads"
+  ],
+  "author": "Farasat Ali <63093876+faraasat@users.noreply.github.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "standard-version": "^9.5.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
