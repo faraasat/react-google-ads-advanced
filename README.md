@@ -2,10 +2,6 @@
 
 <p align="center">A lightweight, customizable React component for embedding and managing Google AdSense ads with automatic detection of unfilled ads and smart hiding logic. Includes a built-in observer that monitors ad status dynamically and hides failed or unfilled ad slots automatically. Equally useable for React, React 19, Next.js Pages Router and Next.js App Router.</p>
 
-<br />
-
-<p align="center">
-
 ![npm version](https://img.shields.io/npm/v/react-google-ads-advanced.svg) &nbsp;
 ![package size minified](https://img.shields.io/bundlephobia/min/react-google-ads-advanced?style=plastic) &nbsp;
 [![jsdelivr package](https://data.jsdelivr.com/v1/package/npm/react-google-ads-advanced/badge)](https://www.jsdelivr.com/package/npm/react-google-ads-advanced) &nbsp;
@@ -16,15 +12,8 @@
 ![total downloads per week](https://img.shields.io/npm/dw/react-google-ads-advanced.svg) &nbsp;
 ![total downloads per month](https://img.shields.io/npm/dm/react-google-ads-advanced.svg) &nbsp;
 ![download-image](https://img.shields.io/npm/dm/react-google-ads-advanced.svg) &nbsp;
-![download-url](https://npmjs.org/package/react-google-ads-advanced) &nbsp;
-
-</p>
-
-<p align="center">
 
 [![react-google-ads-advanced](https://nodei.co/npm/react-google-ads-advanced.png)](https://npmjs.org/package/react-google-ads-advanced)
-
-</p>
 
 ---
 
@@ -71,7 +60,7 @@ import React from "react";
 import { GoogleAdsObserver } from "react-google-ads-advanced";
 
 // VERY IMPORTANT
-import "react-google-ads-advanced/index.css";
+import "react-google-ads-advanced/dist/index.css";
 
 function App() {
   return (
@@ -94,7 +83,7 @@ import React from "react";
 import { GoogleAdsObserver } from "react-google-ads-advanced";
 
 // VERY IMPORTANT
-import "react-google-ads-advanced/index.css";
+import "react-google-ads-advanced/dist/index.css";
 
 function Main() {
   return (
@@ -118,7 +107,7 @@ import type { AppProps } from "next/app";
 import { GoogleAdsObserver } from "react-google-ads-advanced";
 
 // VERY IMPORTANT
-import "react-google-ads-advanced/index.css";
+import "react-google-ads-advanced/dist/index.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -144,7 +133,7 @@ import "./globals.css";
 import { GoogleAdsObserver } from "react-google-ads-advanced";
 
 // VERY IMPORTANT
-import "react-google-ads-advanced/index.css";
+import "react-google-ads-advanced/dist/index.css";
 
 export default function RootLayout({
   children,
@@ -237,4 +226,3 @@ Built and maintained by [**Farasat Ali**](https://www.farasat.me)
 - Website: [www.farasat.me](https://www.farasat.me)
 - LinkedIn: [linkedin.com/in/faraasat](https://linkedin.com/in/faraasat)
 - GitHub: [github.com/faraasat](https://github.com/faraasat)
-
