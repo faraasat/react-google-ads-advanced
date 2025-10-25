@@ -4,7 +4,7 @@
 
 <br />
 
-<center>
+<p align="center">
 
 ![npm version](https://img.shields.io/npm/v/react-google-ads-advanced.svg) &nbsp;
 ![package size minified](https://img.shields.io/bundlephobia/min/react-google-ads-advanced?style=plastic) &nbsp;
@@ -18,15 +18,13 @@
 ![download-image](https://img.shields.io/npm/dm/react-google-ads-advanced.svg) &nbsp;
 ![download-url](https://npmjs.org/package/react-google-ads-advanced) &nbsp;
 
-</center>
+</p>
 
-<br />
-
-<center>
+<p align="center">
 
 [![react-google-ads-advanced](https://nodei.co/npm/react-google-ads-advanced.png)](https://npmjs.org/package/react-google-ads-advanced)
 
-</center>
+</p>
 
 ---
 
