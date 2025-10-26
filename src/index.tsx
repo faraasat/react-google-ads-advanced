@@ -31,59 +31,6 @@ const GoogleAd: React.FC<IReactGoogleAdsAdvanced> = (props) => {
     }
   }, []);
 
-  // Effect to hide unloaded ad
-  // React.useEffect(() => {
-  //   if (isAdPushed) {
-  //     let timeout: NodeJS.Timeout;
-  //     const ad: HTMLModElement | null = ref.current;
-  //     console.log(ad);
-
-  //     ad.addEventListener("change", () => {
-  //       console.log({
-  //         'ad.getAttribute("data-adsbygoogle-status")': ad.getAttribute(
-  //           "data-adsbygoogle-status"
-  //         ),
-  //         'ad.getAttribute("data-ad-status")':
-  //           ad.getAttribute("data-ad-status"),
-  //         ele: ad.getElementsByTagName("iframe")[0],
-  //       });
-  //     });
-
-  //     // Function to unload ad if not filled
-  //     const unloadAdd = () => {
-  //       console.log(ad);
-
-  //       console.log({
-  //         'ad.getAttribute("data-adsbygoogle-status")': ad.getAttribute(
-  //           "data-adsbygoogle-status"
-  //         ),
-  //         'ad.getAttribute("data-ad-status")':
-  //           ad.getAttribute("data-ad-status"),
-  //         ele: ad.getElementsByTagName("iframe")[0],
-  //       });
-
-  //       if (
-  //         ad.getAttribute("data-adsbygoogle-status") == "done" &&
-  //         (ad.getAttribute("data-ad-status") == "unfilled" ||
-  //           ad.childNodes.length == 0 ||
-  //           ad.childNodes[0] == null ||
-  //           ad.childNodes[0].childNodes.length === 0)
-  //       ) {
-  //         ad.style.setProperty("display", "none", "important");
-  //       }
-  //     };
-
-  //     // Schedule ad unloading
-  //     timeout = setTimeout(unloadAdd, adRemovalTimeout);
-
-  //     // Cleanup on unmount
-  //     return () => {
-  //       clearTimeout(timeout);
-  //       ref.current.style.setProperty("display", undefined);
-  //     };
-  //   }
-  // }, [isAdPushed]);
-
   // Render the ad container
   return (
     <ins
