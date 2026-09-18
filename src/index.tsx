@@ -7,8 +7,6 @@ import "./style.css";
 const adClass = "gg-ads-c";
 
 const GoogleAd: React.FC<IReactGoogleAdsAdvanced> = (props) => {
-  const ref = React.useRef<HTMLModElement>(null);
-
   // Destructure props
   const {
     slot,
@@ -35,7 +33,6 @@ const GoogleAd: React.FC<IReactGoogleAdsAdvanced> = (props) => {
   return (
     <ins
       {...rest}
-      ref={ref}
       className={`${adClass} adsbygoogle ${className ? className : ""}`}
       style={{ ...style }}
       data-ad-client={clientId}
@@ -51,17 +48,20 @@ const GoogleAdsObserver: FC<{}> = () => {
     const handleInsChange = (insEl: HTMLElement) => {
       const adStatus = insEl.getAttribute("data-adsbygoogle-status");
       const adFill = insEl.getAttribute("data-ad-status");
-      const iframe = insEl.querySelector("iframe");
 
-      console.log("Ad element changed:", { adStatus, adFill, iframe });
+      if (adStatus !== "done") return;
 
-      if (
-        adStatus === "done" &&
-        (adFill == "unfilled" ||
-          insEl.childNodes.length == 0 ||
-          insEl.childNodes[0] == null ||
-          insEl.childNodes[0].childNodes.length === 0)
-      ) {
+      // `data-ad-status` is AdSense's own verdict, so trust it when present.
+      // The DOM-shape fallback only applies when AdSense set no status at all:
+      // a filled slot renders a cross-origin iframe whose childNodes are empty
+      // from this document, so treating "no grandchildren" as unfilled used to
+      // collapse perfectly good ads.
+      const isUnfilled =
+        adFill === "unfilled" ||
+        (adFill === null &&
+          (insEl.childNodes.length === 0 || !insEl.querySelector("iframe")));
+
+      if (isUnfilled) {
         insEl.style.setProperty("display", "none", "important");
       }
     };
@@ -74,7 +74,6 @@ const GoogleAdsObserver: FC<{}> = () => {
           mutation.target instanceof HTMLElement &&
           mutation.target.tagName === "INS"
         ) {
-          console.log("Attribute changed on INS:", mutation.target);
           handleInsChange(mutation.target);
         }
       }
