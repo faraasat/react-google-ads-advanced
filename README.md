@@ -1,228 +1,239 @@
-<h1 align="center">🧩 React Google Ads Advanced</h1>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/faraasat/react-google-ads-advanced/main/.github/assets/banner.svg" alt="react-google-ads-advanced" width="100%" />
+</p>
 
-<p align="center">A lightweight, customizable React component for embedding and managing Google AdSense ads with automatic detection of unfilled ads and smart hiding logic. Includes a built-in observer that monitors ad status dynamically and hides failed or unfilled ad slots automatically. Equally useable for React, React 19, Next.js Pages Router and Next.js App Router.</p>
+<p align="center">
+  Google AdSense for React that collapses unfilled slots instead of leaving blank gaps in your layout.
+</p>
 
-![npm version](https://img.shields.io/npm/v/react-google-ads-advanced.svg) &nbsp;
-![package size minified](https://img.shields.io/bundlephobia/min/react-google-ads-advanced?style=plastic) &nbsp;
-[![jsdelivr package](https://data.jsdelivr.com/v1/package/npm/react-google-ads-advanced/badge)](https://www.jsdelivr.com/package/npm/react-google-ads-advanced) &nbsp;
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-google-ads-advanced"><img alt="npm version" src="https://img.shields.io/npm/v/react-google-ads-advanced?color=cb3837&label=npm&logo=npm"></a>
+  <a href="https://www.npmjs.com/package/react-google-ads-advanced"><img alt="downloads" src="https://img.shields.io/npm/dm/react-google-ads-advanced?color=cb3837&label=downloads"></a>
+  <a href="https://bundlephobia.com/package/react-google-ads-advanced"><img alt="bundle size" src="https://img.shields.io/bundlephobia/minzip/react-google-ads-advanced?label=minzipped"></a>
+  <a href="https://github.com/faraasat/react-google-ads-advanced/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/faraasat/react-google-ads-advanced/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="types" src="https://img.shields.io/badge/types-included-3178c6?logo=typescript&logoColor=white">
+  <a href="https://github.com/faraasat/react-google-ads-advanced/blob/main/LICENSE"><img alt="license" src="https://img.shields.io/npm/l/react-google-ads-advanced?color=blue"></a>
+</p>
 
-![total downloads](https://img.shields.io/npm/dt/react-google-ads-advanced.svg) &nbsp;
-![total downloads per year](https://img.shields.io/npm/dy/react-google-ads-advanced.svg) &nbsp;
-![total downloads per week](https://img.shields.io/npm/dw/react-google-ads-advanced.svg) &nbsp;
-![total downloads per month](https://img.shields.io/npm/dm/react-google-ads-advanced.svg) &nbsp;
-![download-image](https://img.shields.io/npm/dm/react-google-ads-advanced.svg) &nbsp;
-
-[![react-google-ads-advanced](https://nodei.co/npm/react-google-ads-advanced.png)](https://npmjs.org/package/react-google-ads-advanced)
+<p align="center">
+  <a href="https://faraasat.github.io/react-google-ads-advanced/"><b>Live demo</b></a> ·
+  <a href="https://www.npmjs.com/package/react-google-ads-advanced">npm</a> ·
+  <a href="https://github.com/faraasat/react-google-ads-advanced/blob/main/CHANGELOG.md">Changelog</a> ·
+  <a href="https://github.com/faraasat/react-google-ads-advanced/issues">Issues</a>
+</p>
 
 ---
 
-## 📦 Installation
+## Why
+
+A plain `<ins class="adsbygoogle">` has three problems: it leaves a blank
+rectangle whenever AdSense has nothing to serve, it reserves no space so the
+page jumps when the ad arrives, and it requests every slot immediately even the
+ones far below the fold.
+
+This package fixes all three, and stays out of the way otherwise.
+
+## Installation
 
 ```bash
-npm i react-google-ads-advanced
+npm install react-google-ads-advanced
+```
 
-# or
+<details>
+<summary>yarn / pnpm / bun</summary>
+
+```bash
 yarn add react-google-ads-advanced
-
-# or
-pnpm i react-google-ads-advanced
-
-# or
+pnpm add react-google-ads-advanced
 bun add react-google-ads-advanced
 ```
+</details>
 
----
+**Peer dependencies:** `react >= 17`, `react-dom >= 17`.
 
-## 🚀 Features
-
-- Easy to use React component
-- Automatically loads Google AdSense ads
-- Observes ad fill status and hides unfilled ads
-- Fully customizable with className and style props
-- Lightweight and zero dependencies
-- Supports responsive ads out of the box
-
----
-
-## 🧠 Usage
-
-Before doing any of this, you must make sure `Adsense Ads Script` is in your project according to the framework guidelines.
-
-### **React (CRA)**
-
-If you’re using **Create React App** or a plain React setup, first import the global observer in the `App.tsx` or `App.jsx`:
+## Quick start
 
 ```tsx
-// src/App.tsx|jsx
-import React from "react";
+import { AdSenseScript, GoogleAd } from "react-google-ads-advanced";
+import "react-google-ads-advanced/style.css";
 
-import { GoogleAdsObserver } from "react-google-ads-advanced";
-
-// VERY IMPORTANT
-import "react-google-ads-advanced/dist/index.css";
-
-function App() {
-  return (
-    <div className="App">
-      {/* Place observer once globally */}
-      <GoogleAdsObserver />
-    </div>
-  );
-}
-```
-
-### **Vite + React**
-
-For **Vite**, you can use it the same way:
-
-```tsx
-// src/main.tsx|jsx
-import React from "react";
-
-import { GoogleAdsObserver } from "react-google-ads-advanced";
-
-// VERY IMPORTANT
-import "react-google-ads-advanced/dist/index.css";
-
-function Main() {
+export default function Layout({ children }) {
   return (
     <>
-      <GoogleAdsObserver />
+      <AdSenseScript clientId="ca-pub-XXXXXXXXXXXXXXXX" />
+      {children}
+      <GoogleAd clientId="ca-pub-XXXXXXXXXXXXXXXX" slot="1234567890" />
     </>
   );
 }
-
-export default Main;
 ```
 
-### **Next.js Pages Router**
+> **Next.js App Router:** the package ships the `"use client"` directive, so it
+> imports straight into a server component.
 
-If your app uses **pages/** (classic router):
+## `<AdSenseScript />`
+
+Loads the AdSense script once per page. Optional — skip it if you already load
+the script yourself.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `clientId` | `string` | — | **Required.** Publisher id. |
+| `enabled` | `boolean` | `true` | Set `false` to hold off until consent is granted. |
 
 ```tsx
-// pages/_app.tsx|jsx
-import type { AppProps } from "next/app";
-
-import { GoogleAdsObserver } from "react-google-ads-advanced";
-
-// VERY IMPORTANT
-import "react-google-ads-advanced/dist/index.css";
-
-function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <>
-      {/* Global ad observer */}
-      <GoogleAdsObserver />
-      <Component {...pageProps} />
-    </>
-  );
-}
-
-export default MyApp;
+// Only load the script once the visitor has accepted advertising cookies.
+<AdSenseScript clientId="ca-pub-XXXX" enabled={consent.ad_storage} />
 ```
 
-### **Next.js (App Router)**
+## `<GoogleAd />`
 
-If your app uses the new **app/** directory:
+### Core
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `clientId` | `string` | — | **Required.** Publisher id (`ca-pub-…`). |
+| `slot` | `string` | — | **Required.** Ad slot id. |
+| `adFormat` | `string` | `"auto"` | Maps to `data-ad-format`. |
+| `adFullWidthResponsive` | `string` | `"true"` | Maps to `data-full-width-responsive`. |
+| `adLayout` | `string` | — | For in-article / in-feed units. |
+| `adLayoutKey` | `string` | — | Maps to `data-ad-layout-key`. |
+| `className` / `style` | — | — | Applied to the slot. |
+
+Any other prop is spread onto the underlying `<ins>`.
+
+### Layout stability
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `minHeight` | `number \| string` | `250` | Space reserved until the outcome is known, then released. |
+
+Unreserved ad slots are one of the most common causes of **Cumulative Layout
+Shift**, so this defaults to `250` rather than `0`. Match it to the slot you
+configured in AdSense:
 
 ```tsx
-// app/layout.tsx|jsx
-import "./globals.css";
-
-import { GoogleAdsObserver } from "react-google-ads-advanced";
-
-// VERY IMPORTANT
-import "react-google-ads-advanced/dist/index.css";
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body>
-        <GoogleAdsObserver />
-        {children}
-      </body>
-    </html>
-  );
-}
+<GoogleAd clientId="ca-pub-XXXX" slot="123" minHeight={90} />
 ```
 
----
+### Lazy loading
 
-> <b style="color:red">NOTE: After all the initial setup according to your framework, now you can place the ad anywhere in you app:</b>
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `lazy` | `boolean \| number` | `false` | Defer the request until the slot nears the viewport. `true` uses a 200px margin; a number sets your own, in px. |
+
+```tsx
+<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} />
+```
+
+Off by default: a slot that is never requested never earns, so lazy-load the
+ones well below the fold rather than all of them.
+
+### Unfilled slots
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `collapseOnUnfilled` | `boolean` | `true` | Hide the slot when AdSense has no ad. |
+| `fallback` | `ReactNode` | — | Render this instead when unfilled. Implies collapsing. |
+| `onFilled` / `onUnfilled` | `() => void` | — | Outcome callbacks. |
 
 ```tsx
 <GoogleAd
-    clientId="<your-client-id>"
-    slot="<your-slot-id>"
-    {/* OTHER PROPS */}
+  clientId="ca-pub-XXXX"
+  slot="123"
+  fallback={<NewsletterSignup />}
+  onUnfilled={() => analytics.track("ad_unfilled")}
 />
 ```
 
----
+### Other
 
-## ⚙️ Props
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | `"Advertisement"` | Accessible label for the slot. |
+| `refreshKey` | `string \| number` | — | Change it to request a fresh ad into the same slot. |
 
-| Prop                    | Type                  | Default      | Description                                           |
-| ----------------------- | --------------------- | ------------ | ----------------------------------------------------- |
-| `clientId`              | `string`              | **Required** | Your Google AdSense client ID (`ca-pub-XXXXXXXXXXXX`) |
-| `slot`                  | `string`              | **Required** | Ad slot ID from AdSense                               |
-| `adFormat`              | `string`              | `"auto"`     | Format of the ad (`auto`, `rectangle`, etc.)          |
-| `adFullWidthResponsive` | `string`              | `"true"`     | Enables full-width responsive ads                     |
-| `className`             | `string`              | `""`         | Additional custom CSS classes                         |
-| `style`                 | `React.CSSProperties` | `{}`         | Inline styles for the ad block                        |
-| `...rest`               | any                   | —            | Other props passed to the `<ins>` element             |
+## How unfilled detection works
 
----
+`data-ad-status` is AdSense's own verdict, so it is trusted whenever present.
+Only when AdSense sets no status at all does the component fall back to
+inspecting the slot's contents.
 
-## Components Overview
+That distinction matters: a **filled** slot renders a cross-origin iframe whose
+children are not visible from your document, so treating "looks empty" as
+unfilled would collapse perfectly good ads.
 
-### 🪄 `GoogleAds`
+## `<GoogleAdsObserver />`
 
-Renders a Google AdSense `<ins>` tag and automatically pushes it to the `adsbygoogle` queue.
-
-```tsx
-<GoogleAds clientId="<your-client-id>" slot="<your-slot-id>" adFormat="auto" />
-```
-
-### `GoogleAdsObserver`
-
-Watches for dynamically loaded ads and hides empty or unfilled ad blocks automatically.
-
-- Uses a `MutationObserver` to track attribute changes on all `<ins>` tags.
-- If the ad is marked as `"done"` but `"unfilled"` or has no children (iframe missing), it hides the element.
-
-You only need **one instance globally**:
+Only needed for slots created **outside** React — `GoogleAd` manages itself.
 
 ```tsx
-<GoogleAdsObserver />
+<GoogleAdsObserver />              // watches document.body
+<GoogleAdsObserver root={myEl} />  // or a subtree
 ```
 
----
+## Consent
 
-## 💡 Notes
+Personalised advertising needs consent in the EU/UK. Gate the script, and
+optionally the slots:
 
-- Must include Google AdSense script in your app according to your framework guideline:
-
-```html
-<script
-  async
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-  crossorigin="anonymous"
-></script>
+```tsx
+<AdSenseScript clientId="ca-pub-XXXX" enabled={hasAdConsent} />
 ```
 
-- Make sure your AdSense account and slots are approved before testing.
-- Ads do not work in the development mode.
+Pair with
+[`react-consent-management-banner`](https://github.com/faraasat/react-consent-management-banner),
+which wires Google Consent Mode v2 for you.
 
-## 🧑‍💻 Author
+## Notes
 
-Built and maintained by [**Farasat Ali**](https://www.farasat.me)
+- Ads do not render on `localhost` or on an unapproved domain. Empty slots in
+  development are AdSense, not this package.
+- Ad blockers stop the AdSense script loading at all. Pair with
+  [`react-adblocker-detect`](https://github.com/faraasat/react-adblocker-detect)
+  to detect that case.
+- The stylesheet sets **no `z-index`** — an advert should not stack above your
+  navigation or dialogs. Set one yourself if a layout needs it.
 
-- Website: [www.farasat.me](https://www.farasat.me)
-- LinkedIn: [linkedin.com/in/faraasat](https://linkedin.com/in/faraasat)
-- GitHub: [github.com/faraasat](https://github.com/faraasat)
+## Styling
+
+```tsx
+import "react-google-ads-advanced/style.css";
+```
+
+The stylesheet is deliberately tiny: `display: block`, full width, and
+`overflow: hidden` so a slightly oversized creative cannot introduce a
+horizontal scrollbar on narrow screens. Everything else is AdSense's own
+layout, and fighting it with `!important` causes more problems than it solves.
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+```bash
+git clone https://github.com/faraasat/react-google-ads-advanced.git
+cd react-google-ads-advanced
+npm install
+npm test          # vitest
+npm run typecheck # tsc --noEmit
+npm run build     # tsup
+```
+
+To run the demo site against your local build:
+
+```bash
+npm run example:dev
+```
+
+Releases are manual — nothing publishes on a push to `main`. Maintainers run
+the **Release** workflow from the Actions tab.
+
+## Privacy
+
+The published package contains **no telemetry**. The demo site at
+[faraasat.github.io/react-google-ads-advanced](https://faraasat.github.io/react-google-ads-advanced/) uses
+Google Analytics and Aptabase; the library itself never phones home.
+
+## License
+
+[MIT](./LICENSE) © [Farasat Ali](https://github.com/faraasat)
