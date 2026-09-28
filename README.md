@@ -150,7 +150,7 @@ ones well below the fold rather than all of them.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | `string` | `"Advertisement"` | Accessible label for the slot. |
+| `label` | `string` | `"Advertisement"` | Accessible label. The slot is exposed as a `complementary` landmark so screen-reader users can identify and skip it. |
 | `refreshKey` | `string \| number` | — | Change it to request a fresh ad into the same slot. |
 
 ## How unfilled detection works

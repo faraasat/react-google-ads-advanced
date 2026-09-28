@@ -167,6 +167,10 @@ export const GoogleAd: React.FC<IReactGoogleAdsAdvanced> = ({
       {...rest}
       ref={insRef}
       className={`${AD_CLASS} adsbygoogle${className ? ` ${className}` : ""}`}
+      // `aria-label` is prohibited on an element with a generic role, so the
+      // slot carries an explicit landmark role to hang the label on. Without
+      // this, axe reports aria-prohibited-attr and the label is ignored.
+      role="complementary"
       aria-label={label}
       style={{
         // Reserve space until the outcome is known, so the page does not jump.
