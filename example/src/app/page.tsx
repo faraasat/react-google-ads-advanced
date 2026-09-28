@@ -106,7 +106,7 @@ export default function Home() {
           <code>minHeight: 90</code> before the ad resolves, then releases it —
           so the page never jumps.
         </p>
-        <pre>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" minHeight={90} />`}</pre>
+        <pre tabIndex={0}>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" minHeight={90} />`}</pre>
       </section>
 
       <section className="card">
@@ -116,12 +116,12 @@ export default function Home() {
           a slot that is never requested never earns, so lazy-load the ones well
           below the fold rather than all of them.
         </p>
-        <pre>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} />`}</pre>
+        <pre tabIndex={0}>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} />`}</pre>
       </section>
 
       <section className="card">
         <h2>Usage</h2>
-        <pre>{`import { AdSenseScript, GoogleAd } from "react-google-ads-advanced";
+        <pre tabIndex={0}>{`import { AdSenseScript, GoogleAd } from "react-google-ads-advanced";
 import "react-google-ads-advanced/style.css";
 
 export default function Layout({ children }) {

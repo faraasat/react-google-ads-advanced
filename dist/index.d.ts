@@ -42,7 +42,10 @@ interface IReactGoogleAdsAdvanced extends Omit<React.DetailedHTMLProps<React.Ins
      * promos, a newsletter nudge, anything. Implies `collapseOnUnfilled`.
      */
     fallback?: React.ReactNode;
-    /** Accessible label for the slot. Default `"Advertisement"`. */
+    /**
+     * Accessible label for the slot, exposed via a `complementary` landmark.
+     * Default `"Advertisement"`.
+     */
     label?: string;
     /** Change this value to request a fresh ad into the same slot. */
     refreshKey?: string | number;
