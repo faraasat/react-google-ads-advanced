@@ -1,94 +1,143 @@
 "use client";
 
 import { useState } from "react";
-import { GoogleAd, GoogleAdsObserver } from "react-google-ads-advanced";
+import { GoogleAd } from "react-google-ads-advanced";
 import { Hero } from "@/components/hero";
 import { Footer } from "@/components/footer";
 import { track } from "@/components/analytics";
 
-export default function Home() {
-  const [simulated, setSimulated] = useState<"filled" | "unfilled" | null>(null);
+/**
+ * AdSense never serves real ads on a demo domain, so this page drives the
+ * component with a stand-in <ins> carrying the same attributes AdSense sets in
+ * production. Everything you see is the real component logic.
+ */
+function Simulator() {
+  const [outcome, setOutcome] = useState<"idle" | "filled" | "unfilled">("idle");
+  const [withFallback, setWithFallback] = useState(false);
+  const [key, setKey] = useState(0);
 
-  // AdSense will not serve real ads on a demo domain, so the observer is
-  // demonstrated against a stand-in <ins> carrying the same attributes
-  // AdSense sets in production.
   const simulate = (status: "filled" | "unfilled") => {
-    const el = document.getElementById("sim-ad");
+    const el = document.querySelector<HTMLElement>("#sim .adsbygoogle");
     if (!el) return;
-    el.style.removeProperty("display");
     if (status === "filled" && !el.querySelector("iframe")) {
-      const frame = document.createElement("iframe");
-      frame.title = "simulated ad";
-      el.appendChild(frame);
+      const f = document.createElement("iframe");
+      f.title = "simulated creative";
+      f.style.cssText = "width:100%;height:90px;border:0;background:#1d2a3d";
+      el.appendChild(f);
     }
     if (status === "unfilled") el.replaceChildren();
     el.setAttribute("data-adsbygoogle-status", "done");
     el.setAttribute("data-ad-status", status);
-    setSimulated(status);
+    setOutcome(status);
     track("ad_status_simulated", { status });
   };
 
+  const reset = () => {
+    setKey((k) => k + 1);
+    setOutcome("idle");
+  };
+
+  return (
+    <>
+      <div className="row">
+        <button className="demo primary" onClick={() => simulate("filled")}>
+          Simulate filled
+        </button>
+        <button className="demo" onClick={() => simulate("unfilled")}>
+          Simulate unfilled
+        </button>
+        <button className="demo" onClick={reset}>
+          Reset
+        </button>
+        <button className="demo" onClick={() => { setWithFallback((f) => !f); reset(); }}>
+          {withFallback ? "Fallback: on" : "Fallback: off"}
+        </button>
+      </div>
+
+      <div id="sim" className="sim-slot">
+        <GoogleAd
+          key={`${key}-${withFallback}`}
+          clientId="ca-pub-0000000000000000"
+          slot="0000000000"
+          minHeight={90}
+          fallback={
+            withFallback ? (
+              <div className="ad-fallback">
+                <strong>No ad to show</strong>
+                <span>So here is a house promo instead — that is the `fallback` prop.</span>
+              </div>
+            ) : undefined
+          }
+        />
+      </div>
+
+      <dl className="state" style={{ marginTop: 16 }}>
+        <dt>status</dt>
+        <dd>
+          <span className={`pill ${outcome === "unfilled" ? "off" : outcome === "filled" ? "on" : ""}`}>
+            {outcome === "idle" ? "waiting — space reserved (90px)" : outcome}
+          </span>
+        </dd>
+      </dl>
+    </>
+  );
+}
+
+export default function Home() {
   return (
     <main className="wrap">
       <Hero />
-      <GoogleAdsObserver />
 
       <section className="card">
-        <h2>Unfilled-slot collapsing</h2>
+        <h2>Unfilled slots, handled</h2>
         <p className="sub">
-          <code>GoogleAdsObserver</code> watches for AdSense marking a slot{" "}
-          <code>unfilled</code> and hides it, so you never ship a blank
-          rectangle. Trigger either outcome below.
+          AdSense marks a slot <code>unfilled</code> when it has nothing to
+          serve. Left alone that is a blank rectangle in your layout. Trigger
+          either outcome below.
         </p>
-        <div className="row">
-          <button className="demo primary" onClick={() => simulate("filled")}>
-            Simulate filled
-          </button>
-          <button className="demo" onClick={() => simulate("unfilled")}>
-            Simulate unfilled
-          </button>
-        </div>
+        <Simulator />
+      </section>
 
-        <div style={{ marginTop: 20, border: "1px dashed var(--border)", borderRadius: 10, padding: 16 }}>
-          <ins
-            id="sim-ad"
-            style={{ display: "block", minHeight: 90, background: "var(--panel-2)", borderRadius: 8 }}
-          />
-          <p className="sub" style={{ margin: "12px 0 0" }}>
-            {simulated === null
-              ? "Waiting — the slot is a placeholder until you pick an outcome."
-              : simulated === "filled"
-                ? "Marked filled: the slot stays visible."
-                : "Marked unfilled: the observer collapsed it."}
-          </p>
-        </div>
+      <section className="card">
+        <h2>Layout stability</h2>
+        <p className="sub">
+          Unreserved ad slots are a leading cause of{" "}
+          <strong>Cumulative Layout Shift</strong>. The slot above reserves{" "}
+          <code>minHeight: 90</code> before the ad resolves, then releases it —
+          so the page never jumps.
+        </p>
+        <pre>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" minHeight={90} />`}</pre>
+      </section>
+
+      <section className="card">
+        <h2>Lazy loading</h2>
+        <p className="sub">
+          Defer the request until the slot nears the viewport. Off by default —
+          a slot that is never requested never earns, so lazy-load the ones well
+          below the fold rather than all of them.
+        </p>
+        <pre>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} />`}</pre>
       </section>
 
       <section className="card">
         <h2>Usage</h2>
-        <p className="sub">
-          Mount the observer once, then place slots wherever you need them.
-        </p>
-        <pre>{`import { GoogleAd, GoogleAdsObserver } from "react-google-ads-advanced";
+        <pre>{`import { AdSenseScript, GoogleAd } from "react-google-ads-advanced";
 import "react-google-ads-advanced/style.css";
 
 export default function Layout({ children }) {
   return (
     <>
-      <GoogleAdsObserver />
+      <AdSenseScript clientId="ca-pub-XXXX" enabled={hasAdConsent} />
       {children}
-      <GoogleAd clientId="ca-pub-XXXXXXXXXXXXXXXX" slot="1234567890" />
+      <GoogleAd
+        clientId="ca-pub-XXXX"
+        slot="1234567890"
+        minHeight={90}
+        fallback={<NewsletterSignup />}
+      />
     </>
   );
 }`}</pre>
-      </section>
-
-      <section className="card">
-        <h2>A real slot</h2>
-        <p className="sub">
-          Rendered with a placeholder publisher id, so it stays empty here.
-        </p>
-        <GoogleAd clientId="ca-pub-0000000000000000" slot="0000000000" style={{ display: "block", minHeight: 60 }} />
       </section>
 
       <Footer />

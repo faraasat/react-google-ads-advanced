@@ -26,10 +26,12 @@
 
 ## Why
 
-A plain `<ins class="adsbygoogle">` leaves a visible empty rectangle whenever
-AdSense has no ad to serve — which is common on low-traffic pages and in
-unsupported regions. This package renders the slot *and* ships a small observer
-that hides slots AdSense reports as unfilled, so your layout closes up cleanly.
+A plain `<ins class="adsbygoogle">` has three problems: it leaves a blank
+rectangle whenever AdSense has nothing to serve, it reserves no space so the
+page jumps when the ad arrives, and it requests every slot immediately even the
+ones far below the fold.
+
+This package fixes all three, and stays out of the way otherwise.
 
 ## Installation
 
@@ -51,17 +53,14 @@ bun add react-google-ads-advanced
 
 ## Quick start
 
-Load the AdSense script once in your document head, mount the observer once,
-then place slots wherever you need them.
-
 ```tsx
-import { GoogleAd, GoogleAdsObserver } from "react-google-ads-advanced";
+import { AdSenseScript, GoogleAd } from "react-google-ads-advanced";
 import "react-google-ads-advanced/style.css";
 
 export default function Layout({ children }) {
   return (
     <>
-      <GoogleAdsObserver />
+      <AdSenseScript clientId="ca-pub-XXXXXXXXXXXXXXXX" />
       {children}
       <GoogleAd clientId="ca-pub-XXXXXXXXXXXXXXXX" slot="1234567890" />
     </>
@@ -69,72 +68,143 @@ export default function Layout({ children }) {
 }
 ```
 
-<details>
-<summary>Loading the AdSense script in Next.js</summary>
-
-```tsx
-import Script from "next/script";
-
-<Script
-  async
-  strategy="afterInteractive"
-  crossOrigin="anonymous"
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-/>
-```
-</details>
-
 > **Next.js App Router:** the package ships the `"use client"` directive, so it
-> can be imported directly from a server component.
+> imports straight into a server component.
 
-## `<GoogleAd />`
+## `<AdSenseScript />`
+
+Loads the AdSense script once per page. Optional — skip it if you already load
+the script yourself.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `clientId` | `string` | — | **Required.** Your AdSense publisher id (`ca-pub-…`). |
-| `slot` | `string` | — | **Required.** The ad slot id. |
+| `clientId` | `string` | — | **Required.** Publisher id. |
+| `enabled` | `boolean` | `true` | Set `false` to hold off until consent is granted. |
+
+```tsx
+// Only load the script once the visitor has accepted advertising cookies.
+<AdSenseScript clientId="ca-pub-XXXX" enabled={consent.ad_storage} />
+```
+
+## `<GoogleAd />`
+
+### Core
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `clientId` | `string` | — | **Required.** Publisher id (`ca-pub-…`). |
+| `slot` | `string` | — | **Required.** Ad slot id. |
 | `adFormat` | `string` | `"auto"` | Maps to `data-ad-format`. |
 | `adFullWidthResponsive` | `string` | `"true"` | Maps to `data-full-width-responsive`. |
-| `className` | `string` | — | Appended to the built-in classes. |
-| `style` | `CSSProperties` | — | Inline styles for the `<ins>`. |
+| `adLayout` | `string` | — | For in-article / in-feed units. |
+| `adLayoutKey` | `string` | — | Maps to `data-ad-layout-key`. |
+| `className` / `style` | — | — | Applied to the slot. |
 
-Any other prop is spread onto the underlying `<ins>` element.
+Any other prop is spread onto the underlying `<ins>`.
+
+### Layout stability
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `minHeight` | `number \| string` | `250` | Space reserved until the outcome is known, then released. |
+
+Unreserved ad slots are one of the most common causes of **Cumulative Layout
+Shift**, so this defaults to `250` rather than `0`. Match it to the slot you
+configured in AdSense:
+
+```tsx
+<GoogleAd clientId="ca-pub-XXXX" slot="123" minHeight={90} />
+```
+
+### Lazy loading
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `lazy` | `boolean \| number` | `false` | Defer the request until the slot nears the viewport. `true` uses a 200px margin; a number sets your own, in px. |
+
+```tsx
+<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} />
+```
+
+Off by default: a slot that is never requested never earns, so lazy-load the
+ones well below the fold rather than all of them.
+
+### Unfilled slots
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `collapseOnUnfilled` | `boolean` | `true` | Hide the slot when AdSense has no ad. |
+| `fallback` | `ReactNode` | — | Render this instead when unfilled. Implies collapsing. |
+| `onFilled` / `onUnfilled` | `() => void` | — | Outcome callbacks. |
 
 ```tsx
 <GoogleAd
-  clientId="ca-pub-XXXXXXXXXXXXXXXX"
-  slot="1234567890"
-  adFormat="rectangle"
-  style={{ display: "block", minHeight: 250 }}
+  clientId="ca-pub-XXXX"
+  slot="123"
+  fallback={<NewsletterSignup />}
+  onUnfilled={() => analytics.track("ad_unfilled")}
 />
 ```
 
+### Other
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | `"Advertisement"` | Accessible label for the slot. |
+| `refreshKey` | `string \| number` | — | Change it to request a fresh ad into the same slot. |
+
+## How unfilled detection works
+
+`data-ad-status` is AdSense's own verdict, so it is trusted whenever present.
+Only when AdSense sets no status at all does the component fall back to
+inspecting the slot's contents.
+
+That distinction matters: a **filled** slot renders a cross-origin iframe whose
+children are not visible from your document, so treating "looks empty" as
+unfilled would collapse perfectly good ads.
+
 ## `<GoogleAdsObserver />`
 
-Mount this **once**, near the root of your app. It watches the document for
-AdSense updating `data-ad-status` and hides any slot reported as `unfilled`.
+Only needed for slots created **outside** React — `GoogleAd` manages itself.
 
 ```tsx
-<GoogleAdsObserver />
+<GoogleAdsObserver />              // watches document.body
+<GoogleAdsObserver root={myEl} />  // or a subtree
 ```
 
-Detection trusts AdSense's own `data-ad-status` attribute when it is present.
-Only when AdSense sets no status at all does it fall back to inspecting the
-slot's contents — a filled slot renders a cross-origin iframe whose children
-are not visible from your document, so treating "looks empty" as unfilled would
-otherwise collapse perfectly good ads.
+## Consent
 
-The observer disconnects itself on unmount.
+Personalised advertising needs consent in the EU/UK. Gate the script, and
+optionally the slots:
+
+```tsx
+<AdSenseScript clientId="ca-pub-XXXX" enabled={hasAdConsent} />
+```
+
+Pair with
+[`react-consent-management-banner`](https://github.com/faraasat/react-consent-management-banner),
+which wires Google Consent Mode v2 for you.
 
 ## Notes
 
-- Ads will not render on `localhost` or on an unapproved domain. Expect empty
-  slots in development; that is AdSense, not this package.
-- Ad blockers prevent the AdSense script from loading at all. Pair this with
+- Ads do not render on `localhost` or on an unapproved domain. Empty slots in
+  development are AdSense, not this package.
+- Ad blockers stop the AdSense script loading at all. Pair with
   [`react-adblocker-detect`](https://github.com/faraasat/react-adblocker-detect)
-  if you want to detect that case.
-- Respect consent before serving personalised ads — see
-  [`react-consent-management-banner`](https://github.com/faraasat/react-consent-management-banner).
+  to detect that case.
+- The stylesheet sets **no `z-index`** — an advert should not stack above your
+  navigation or dialogs. Set one yourself if a layout needs it.
+
+## Styling
+
+```tsx
+import "react-google-ads-advanced/style.css";
+```
+
+The stylesheet is deliberately tiny: `display: block`, full width, and
+`overflow: hidden` so a slightly oversized creative cannot introduce a
+horizontal scrollbar on narrow screens. Everything else is AdSense's own
+layout, and fighting it with `!important` causes more problems than it solves.
 
 ## Contributing
 
