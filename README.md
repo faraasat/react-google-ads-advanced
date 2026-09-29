@@ -24,6 +24,30 @@
 
 ---
 
+## Upgrading from 1.x
+
+`2.0.0` adds reserved space, lazy loading, fallbacks and a script loader. Props
+are backwards compatible, but three defaults changed.
+
+| Change | Impact | What to do |
+| --- | --- | --- |
+| **Slots reserve `minHeight: 250` by default** | Space is held before the ad resolves, then released. This is deliberate — unreserved slots are a leading cause of Cumulative Layout Shift | Match it to your real slot, e.g. `minHeight={90}`, or `minHeight={0}` for the old behaviour |
+| **The stylesheet no longer sets `z-index: 100 !important`** | Ads no longer stack above your navigation or dialogs | Set a `z-index` yourself if a layout genuinely needs one |
+| **The stylesheet no longer sets `display: flex`** | AdSense controls its own layout again | Usually nothing |
+
+`<GoogleAdsObserver />` is now only needed for slots created **outside** React
+— `<GoogleAd />` observes itself. Leaving it mounted is harmless.
+
+The slot is also exposed as a `complementary` landmark labelled
+"Advertisement", so screen-reader users can identify and skip it.
+
+### New, optional
+
+```tsx
+<AdSenseScript clientId="ca-pub-XXXX" enabled={hasAdConsent} />
+<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} fallback={<Newsletter />} />
+```
+
 ## Why
 
 A plain `<ins class="adsbygoogle">` has three problems: it leaves a blank
