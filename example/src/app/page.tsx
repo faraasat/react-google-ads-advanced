@@ -4,6 +4,7 @@ import { useState } from "react";
 import { GoogleAd } from "react-google-ads-advanced";
 import { Hero } from "@/components/hero";
 import { Footer } from "@/components/footer";
+import { Code } from "@/components/code";
 import { track } from "@/components/analytics";
 
 /**
@@ -106,7 +107,7 @@ export default function Home() {
           <code>minHeight: 90</code> before the ad resolves, then releases it —
           so the page never jumps.
         </p>
-        <pre tabIndex={0}>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" minHeight={90} />`}</pre>
+        <Code language="tsx">{`<GoogleAd clientId="ca-pub-XXXX" slot="123" minHeight={90} />`}</Code>
       </section>
 
       <section className="card">
@@ -116,12 +117,12 @@ export default function Home() {
           a slot that is never requested never earns, so lazy-load the ones well
           below the fold rather than all of them.
         </p>
-        <pre tabIndex={0}>{`<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} />`}</pre>
+        <Code language="tsx">{`<GoogleAd clientId="ca-pub-XXXX" slot="123" lazy={400} />`}</Code>
       </section>
 
       <section className="card">
         <h2>Usage</h2>
-        <pre tabIndex={0}>{`import { AdSenseScript, GoogleAd } from "react-google-ads-advanced";
+        <Code language="tsx">{`import { AdSenseScript, GoogleAd } from "react-google-ads-advanced";
 import "react-google-ads-advanced/style.css";
 
 export default function Layout({ children }) {
@@ -137,7 +138,7 @@ export default function Layout({ children }) {
       />
     </>
   );
-}`}</pre>
+}`}</Code>
       </section>
 
       <Footer />
