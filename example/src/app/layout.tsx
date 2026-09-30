@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@/components/analytics";
+import { TopNav } from "@/components/topnav";
 import "react-google-ads-advanced/style.css";
 import "./globals.css";
 
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <TopNav pkg="react-google-ads-advanced" />
         {children}
         <Analytics packageName="react-google-ads-advanced" />
       </body>
